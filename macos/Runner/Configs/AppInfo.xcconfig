@@ -8,7 +8,7 @@
 PRODUCT_NAME = teklif
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.teklif
+PRODUCT_BUNDLE_IDENTIFIER = com.a8.teklif
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
