@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
@@ -37,7 +38,8 @@ class PdfService {
           pw.SizedBox(height: 20),
           _buildTotalSection(totalAmount, selectedCurrency),
           pw.SizedBox(height: 20),
-          if (settings.terms.isNotEmpty || settings.bankInfo.isNotEmpty) _buildTermsAndBankInfo(settings),
+          if (settings.terms.isNotEmpty || settings.bankInfo.isNotEmpty)
+            _buildTermsAndBankInfo(settings),
         ],
       ),
     );
@@ -50,7 +52,8 @@ class PdfService {
 
   static Future<pw.Font> _loadFont() async {
     try {
-      final fontData = await rootBundle.load('assets/fonts/OpenSans-Regular.ttf');
+      final fontData =
+          await rootBundle.load('assets/fonts/OpenSans-Regular.ttf');
       return pw.Font.ttf(fontData);
     } catch (e) {
       print('Font yüklenemedi: $e');
@@ -64,7 +67,8 @@ class PdfService {
       final file = File(logoPath);
       if (await file.exists()) {
         final bytes = await file.readAsBytes();
-        return pw.Image(pw.MemoryImage(bytes), height: 60, fit: pw.BoxFit.contain);
+        return pw.Image(pw.MemoryImage(bytes),
+            height: 60, fit: pw.BoxFit.contain);
       }
     } catch (e) {
       print('Logo yüklenemedi: $e');
@@ -72,7 +76,8 @@ class PdfService {
     return null;
   }
 
-  static pw.Widget _buildHeaderSection(Company company, Client client, pw.Image? logo) {
+  static pw.Widget _buildHeaderSection(
+      Company company, Client client, pw.Image? logo) {
     return pw.Row(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -87,7 +92,8 @@ class PdfService {
               ],
               pw.Text(
                 company.name,
-                style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+                style:
+                    pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
               ),
               if (company.phone != null) ...[
                 pw.SizedBox(height: 4),
@@ -118,7 +124,8 @@ class PdfService {
               children: [
                 pw.Text(
                   'Müşteri Bilgileri',
-                  style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+                  style: pw.TextStyle(
+                      fontSize: 16, fontWeight: pw.FontWeight.bold),
                 ),
                 pw.SizedBox(height: 8),
                 pw.Text(client.name),
@@ -168,7 +175,9 @@ class PdfService {
                 _buildTableCell(product.unit),
                 _buildTableCell('${product.unitPrice}'),
                 _buildTableCell('%${product.vatRate}'),
-                _buildTableCell(product.discountRate > 0 ? '%${product.discountRate}' : '-'),
+                _buildTableCell(product.discountRate > 0
+                    ? '%${product.discountRate}'
+                    : '-'),
                 _buildTableCell(
                   '${product.total.toStringAsFixed(2)} ${product.currency}',
                   align: pw.TextAlign.right,
@@ -180,18 +189,21 @@ class PdfService {
     );
   }
 
-  static pw.Widget _buildTableHeader(String text, {pw.TextAlign align = pw.TextAlign.left}) {
+  static pw.Widget _buildTableHeader(String text,
+      {pw.TextAlign align = pw.TextAlign.left}) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(5),
       child: pw.Text(
         text,
-        style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.black),
+        style: pw.TextStyle(
+            fontWeight: pw.FontWeight.bold, color: PdfColors.black),
         textAlign: align,
       ),
     );
   }
 
-  static pw.Widget _buildTableCell(String text, {pw.TextAlign align = pw.TextAlign.left, bool bold = false}) {
+  static pw.Widget _buildTableCell(String text,
+      {pw.TextAlign align = pw.TextAlign.left, bool bold = false}) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(5),
       child: pw.Text(
@@ -202,7 +214,8 @@ class PdfService {
     );
   }
 
-  static pw.Widget _buildTotalSection(double totalAmount, String selectedCurrency) {
+  static pw.Widget _buildTotalSection(
+      double totalAmount, String selectedCurrency) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(10),
       decoration: pw.BoxDecoration(
@@ -254,7 +267,8 @@ class PdfService {
                 children: [
                   pw.Text(
                     'Şartlar ve Koşullar',
-                    style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                    style: pw.TextStyle(
+                        fontSize: 14, fontWeight: pw.FontWeight.bold),
                   ),
                   pw.SizedBox(height: 10),
                   pw.Text(settings.terms),
@@ -275,7 +289,8 @@ class PdfService {
                 children: [
                   pw.Text(
                     'Banka Bilgileri',
-                    style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                    style: pw.TextStyle(
+                        fontSize: 14, fontWeight: pw.FontWeight.bold),
                   ),
                   pw.SizedBox(height: 10),
                   pw.Text(settings.bankInfo),
@@ -295,6 +310,7 @@ class PdfService {
     required String selectedCurrency,
     required double totalAmount,
     required OfferSettings settings,
+    Rect? sharePositionOrigin,
   }) async {
     final file = await generateInvoicePdf(
       company: company,
@@ -308,6 +324,8 @@ class PdfService {
     await Share.shareXFiles(
       [XFile(file.path)],
       subject: '${company.name} - ${client.name} Teklif',
+      sharePositionOrigin:
+          sharePositionOrigin ?? const Rect.fromLTWH(0, 0, 1, 1),
     );
   }
 }

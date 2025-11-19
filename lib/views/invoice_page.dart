@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:teklif/providers/settings_provider.dart';
 import 'package:teklif/services/pdf_service.dart';
-import 'package:teklif/services/share_service.dart';
 import '../models/company.dart';
 import '../models/client.dart';
 import '../models/product.dart';
@@ -49,14 +48,22 @@ class InvoicePage extends ConsumerWidget {
               Icons.share,
               color: Colors.white,
             ),
-            onPressed: () => PdfService.sharePdf(
-              company: company,
-              client: client,
-              products: products,
-              selectedCurrency: selectedCurrency,
-              totalAmount: totalAmount,
-              settings: settings,
-            ),
+            onPressed: () async {
+              final renderBox = context.findRenderObject() as RenderBox?;
+              final sharePosition = renderBox != null
+                  ? renderBox.localToGlobal(Offset.zero) & renderBox.size
+                  : const Rect.fromLTWH(0, 0, 1, 1);
+
+              await PdfService.sharePdf(
+                company: company,
+                client: client,
+                products: products,
+                selectedCurrency: selectedCurrency,
+                totalAmount: totalAmount,
+                settings: settings,
+                sharePositionOrigin: sharePosition,
+              );
+            },
           ),
           // IconButton(
           //   icon: const Icon(Icons.print),
@@ -106,7 +113,8 @@ class InvoicePage extends ConsumerWidget {
                 child: Image.network(
                   company.logo!,
                   height: 60,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.business, size: 60),
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.business, size: 60),
                 ),
               ),
             Text(
